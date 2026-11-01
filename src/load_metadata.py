@@ -16,10 +16,29 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ETL1_DIR = PROJECT_ROOT / "ETL1"
 SOURCE_FILES = tuple(f"ETL1C_{number:02d}" for number in range(7, 14))
+RECORD_SIZE = 2052
 EXCLUDED_GROUPS = {
     "ETL1C_11": {"イ", "エ"},
     "ETL1C_12": {"ウ"},
 }
+
+
+def _read_writer_ids(source_path: Path) -> list[int]:
+    """Read Serial Sheet Number (bytes 5-6, big-endian) from M-type records."""
+    if not source_path.is_file():
+        raise FileNotFoundError(
+            f"Raw ETL1 file required to recover writer IDs: {source_path}"
+        )
+    if source_path.stat().st_size % RECORD_SIZE:
+        raise ValueError(f"Incomplete M-type record in {source_path}")
+
+    writer_ids = []
+    with source_path.open("rb") as source:
+        while record := source.read(RECORD_SIZE):
+            if len(record) != RECORD_SIZE:
+                raise ValueError(f"Incomplete M-type record in {source_path}")
+            writer_ids.append(int.from_bytes(record[4:6], byteorder="big"))
+    return writer_ids
 
 
 def load_metadata(
@@ -28,7 +47,8 @@ def load_metadata(
     """Combine the seven metadata CSVs and associate each row with its PNG.
 
     Keep I, E, and U from ETL1C_07 only. Historical characters remain included.
-    Default extraction CSVs do not contain writer IDs.
+    writer_id is recovered from the corresponding raw binary record using
+    source_file and record_index; default extraction CSVs omit this field.
     """
     etl1_dir = Path(etl1_dir).expanduser().absolute()
     tables = []
@@ -52,6 +72,20 @@ def load_metadata(
         metadata = metadata.rename_axis("record_index").reset_index()
         if metadata["record_index"].duplicated().any():
             raise ValueError(f"Duplicate record indices in {metadata_path}")
+
+        writer_ids = _read_writer_ids(etl1_dir / source_file)
+        if len(metadata) != len(writer_ids):
+            raise ValueError(
+                f"Record count mismatch for {source_file}: "
+                f"{len(metadata)} CSV rows, {len(writer_ids)} binary records."
+            )
+        # Map by the original index, not by the current CSV row order.
+        metadata["writer_id"] = metadata["record_index"].map(
+            pd.Series(writer_ids, dtype="int64")
+        )
+        if metadata["writer_id"].isna().any():
+            raise ValueError(f"Invalid record indices in {metadata_path}")
+        metadata["writer_id"] = metadata["writer_id"].astype("int64")
 
         metadata["source_file"] = source_file
         metadata["image_path"] = metadata["record_index"].map(
@@ -97,6 +131,7 @@ def main() -> None:
 
     metadata = load_metadata(args.etl1_dir)
     print(f"Loaded {len(metadata):,} records from {len(SOURCE_FILES)} source files.")
+    print(f"Unique writers: {metadata['writer_id'].nunique():,}")
     print(metadata.head().to_string(index=False))
 
 

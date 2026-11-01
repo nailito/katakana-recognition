@@ -121,6 +121,16 @@ At this stage, extraction preserves the source records. No class selection, trai
 
 ## Acquisition groups retained for this project
 
+ETL1 follows a full gojūon arrangement in which some character labels occupy two positions: `イ` and `エ` appear in both the vowel row and the Y row, while `ウ` appears in both the vowel row and the W row. The [official ETL1 category list](https://etlcdb.db.aist.go.jp/etlcdb/etln/etl1/e1cont.htm) records these repeated categories. Each position contributes 1,411 separately acquired images, so grouping by character gives 2,822 examples for each of these three labels. These are separate acquisitions, not duplicated image files or an error introduced by the loader.
+
 To avoid giving `イ`, `エ`, and `ウ` twice as many examples as other characters, `src/load_metadata.py` keeps their records from `ETL1C_07` and excludes the additional groups: `イ` and `エ` from `ETL1C_11`, and `ウ` from `ETL1C_12`. All other records are retained, including `ヰ`, `ヱ`, and the slightly smaller classes `ナ` and `リ`.
 
 The loaded dataset therefore contains **67,726 images across 48 distinct characters**: 1,411 examples per character, except `ナ` and `リ`, which have 1,410 each. This selection only filters the loaded metadata; the source CSVs and PNGs are unchanged.
+
+### Writer identifiers
+
+The loader also adds `writer_id` by reading `Serial Sheet Number` from bytes 5-6 of each original 2,052-byte M-type record, as a big-endian integer. Records are matched to CSV rows using the source file and `record_index`, rather than their current row order. The seven original binary files must therefore remain available alongside the extracted directories.
+
+The loaded dataset contains 1,411 distinct writer identifiers. Loading fails if binary records are incomplete, CSV and binary record counts differ, or a CSV index cannot be matched. No train/validation/test split is created at this stage.
+
+See the [machine learning methodology](../docs/methodology.md#why-split-by-writer) for the rationale behind splitting by writer.

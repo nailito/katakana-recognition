@@ -1,17 +1,32 @@
-# katakana-recognition
+# Katakana recognition
 
-Exploration of the ETL1 handwritten Katakana dataset. See [data/README.md](data/README.md) for the data source and extraction instructions.
+A learning project in computer vision: exploring handwritten Katakana from ETL1 and building a character classifier step by step.
 
-## Japanese characters in plots
+## Dataset overview
 
-To display Katakana labels in plots, install a Japanese font such as Noto Sans JP. Both notebooks use `find_japanese_font` from `src/fonts.py` to detect installed fonts and check that they contain the characters in the current metadata. Each notebook initializes its own font configuration. If none is compatible, images are displayed without character titles; sample counts remain visible where provided.
+The current selection contains **67,726 grayscale images**, **48 characters**, and **1,411 writers**. Images are 64 pixels wide by 63 pixels high. One acquisition group is retained for each repeated character; historical `ヰ` and `ヱ` remain included.
 
-For Japanese titles, download [Noto Sans JP](https://fonts.google.com/noto/specimen/Noto+Sans+JP) and extract the font files:
+## Current progress
 
-- **Windows:** right-click a `.ttf` or `.otf` file and choose **Install**.
-- **macOS:** open a font file in Font Book and choose **Install**.
-- **Linux:** install through your desktop font manager, or place the files in `~/.local/share/fonts/` and refresh the cache with `fc-cache -f` when available.
+- Image exploration and class-count inspection.
+- Metadata loading and acquisition-group selection.
+- Writer identifiers recovered from the original binary records.
+- Next: create separate training, validation, and test sets by writer.
 
-Restart the notebook kernel after installation. Alternatively, set `JP_FONT_PATH` in the grid cell to a local `.ttf`, `.otf`, or `.ttc` file. This also supports downloaded fonts that have not been installed system-wide.
+Model training and evaluation have not yet been implemented in this repository. No performance results are reported at this stage.
 
-Existing compatible fonts such as Hiragino can be detected automatically. The notebook does not download or install fonts. Font selection only changes plot titles, not the image data.
+## Documentation
+
+- [Machine learning methodology](docs/methodology.md): reasoning, dataset choices, and planned evaluation.
+- [Setup guide](docs/setup.md): Python environment, notebook kernel, and Japanese fonts.
+- [Data guide](data/README.md): ETL1 source, terms of use, extraction, and file structure.
+
+## Project structure
+
+```text
+data/        Data documentation; generated data stays local
+docs/        Methodology and setup guides
+notebooks/   Exploration and dataset preparation
+reports/     Figures and analysis outputs
+src/         Reusable Python functions
+```
