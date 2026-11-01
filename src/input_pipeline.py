@@ -8,5 +8,16 @@ def load_image(path,label):
     return image,label
 
 
-def build_dataset(metadata, batch_size_training,seed):
-    pass
+def build_dataset(metadata, batch_size_training=32,seed=12):
+    paths = metadata["image_path"].astype(str).to_numpy()
+    labels = metadata["label"].to_numpy()
+
+    ds = tf.data.Dataset.from_tensor_slices((paths,labels))
+    ds_shuffled = ds.shuffle(buffer_size=len(metadata),seed=seed)
+
+    metadata_ds = (ds_shuffled
+                .map(load_image,num_parallel_calls=tf.data.AUTOTUNE)
+                .batch(batch_size_training)
+                .prefetch(tf.data.AUTOTUNE))
+
+    return metadata_ds
