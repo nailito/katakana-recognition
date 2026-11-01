@@ -221,3 +221,6 @@ __marimo__/
 
 
 .DS_Store
+
+# Raw or extracted ETL1 data (also excludes a local symbolic link).
+/ETL1

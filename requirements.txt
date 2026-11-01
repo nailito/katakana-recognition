@@ -1,0 +1,6 @@
+# Data exploration and notebook kernel (Python 3.11).
+numpy==2.4.6
+pandas==3.1.0
+matplotlib==3.11.2
+pillow==13.0.0
+ipykernel==7.4.0
