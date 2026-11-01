@@ -118,3 +118,9 @@ The numeric filename is an image identifier, not a character label. Labels must 
 Additional source metadata, including `Serial Sheet Number` and quality indicators, can be exported using the utility's `--fields` option. They are not included in the default two-field CSV.
 
 At this stage, extraction preserves the source records. No class selection, train/validation/test assignment, or image transformation beyond the utility's decoding and PNG export has been applied.
+
+## Acquisition groups retained for this project
+
+To avoid giving `イ`, `エ`, and `ウ` twice as many examples as other characters, `src/load_metadata.py` keeps their records from `ETL1C_07` and excludes the additional groups: `イ` and `エ` from `ETL1C_11`, and `ウ` from `ETL1C_12`. All other records are retained, including `ヰ`, `ヱ`, and the slightly smaller classes `ナ` and `リ`.
+
+The loaded dataset therefore contains **67,726 images across 48 distinct characters**: 1,411 examples per character, except `ナ` and `リ`, which have 1,410 each. This selection only filters the loaded metadata; the source CSVs and PNGs are unchanged.

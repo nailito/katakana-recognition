@@ -4,7 +4,7 @@ Exploration of the ETL1 handwritten Katakana dataset. See [data/README.md](data/
 
 ## Japanese characters in plots
 
-To display Katakana labels in plots, install a Japanese font such as Noto Sans JP. The notebook detects installed fonts and checks that they contain the characters in the current metadata. If none is compatible, titles show Unicode codes such as `U+30A2` instead of missing-glyph squares.
+To display Katakana labels in plots, install a Japanese font such as Noto Sans JP. Both notebooks use `find_japanese_font` from `src/fonts.py` to detect installed fonts and check that they contain the characters in the current metadata. Each notebook initializes its own font configuration. If none is compatible, images are displayed without character titles; sample counts remain visible where provided.
 
 For Japanese titles, download [Noto Sans JP](https://fonts.google.com/noto/specimen/Noto+Sans+JP) and extract the font files:
 

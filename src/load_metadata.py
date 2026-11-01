@@ -1,4 +1,4 @@
-"""Load extracted ETL1 Katakana metadata without filtering source categories.
+"""Load ETL1 Katakana metadata, excluding three repeated acquisition groups.
 
 Run from the repository root:
     python src/load_metadata.py
@@ -16,13 +16,19 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ETL1_DIR = PROJECT_ROOT / "ETL1"
 SOURCE_FILES = tuple(f"ETL1C_{number:02d}" for number in range(7, 14))
+EXCLUDED_GROUPS = {
+    "ETL1C_11": {"イ", "エ"},
+    "ETL1C_12": {"ウ"},
+}
 
 
-def load_metadata(etl1_dir: str | Path = DEFAULT_ETL1_DIR) -> pd.DataFrame:
+def load_metadata(
+    etl1_dir: str | Path = DEFAULT_ETL1_DIR,
+) -> pd.DataFrame:
     """Combine the seven metadata CSVs and associate each row with its PNG.
 
-    All acquisition categories are retained, including historical characters
-    and repeated categories. Default extraction CSVs do not contain writer IDs.
+    Keep I, E, and U from ETL1C_07 only. Historical characters remain included.
+    Default extraction CSVs do not contain writer IDs.
     """
     etl1_dir = Path(etl1_dir).expanduser().absolute()
     tables = []
@@ -54,6 +60,14 @@ def load_metadata(etl1_dir: str | Path = DEFAULT_ETL1_DIR) -> pd.DataFrame:
         tables.append(metadata)
 
     combined = pd.concat(tables, ignore_index=True)
+
+    excluded = pd.Series(False, index=combined.index)
+    for source_file, characters in EXCLUDED_GROUPS.items():
+        excluded |= (
+            combined["source_file"].eq(source_file)
+            & combined["char"].isin(characters)
+        )
+    combined = combined.loc[~excluded].reset_index(drop=True)
 
     # Filenames repeat across source files; the full path identifies an image.
     if combined["image_path"].duplicated().any():
