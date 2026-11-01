@@ -44,11 +44,13 @@ def _read_writer_ids(source_path: Path) -> list[int]:
 def load_metadata(
     etl1_dir: str | Path = DEFAULT_ETL1_DIR,
 ) -> pd.DataFrame:
-    """Combine the seven metadata CSVs and associate each row with its PNG.
+    """Return char, writer_id, and image_path with a unique sequential index.
 
     Keep I, E, and U from ETL1C_07 only. Historical characters remain included.
     writer_id is recovered from the corresponding raw binary record using
     source_file and record_index; default extraction CSVs omit this field.
+    Original record indices are used internally to locate records and PNGs.
+    The output index runs from zero to the number of retained images minus one.
     """
     etl1_dir = Path(etl1_dir).expanduser().absolute()
     tables = []
@@ -116,7 +118,7 @@ def load_metadata(
             f"First missing file: {missing_images.iloc[0]}"
         )
 
-    return combined
+    return combined[["char", "writer_id", "image_path"]].reset_index(drop=True)
 
 
 def main() -> None:
@@ -132,7 +134,7 @@ def main() -> None:
     metadata = load_metadata(args.etl1_dir)
     print(f"Loaded {len(metadata):,} records from {len(SOURCE_FILES)} source files.")
     print(f"Unique writers: {metadata['writer_id'].nunique():,}")
-    print(metadata.head().to_string(index=False))
+    print(metadata.head().to_string())
 
 
 if __name__ == "__main__":
