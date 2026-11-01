@@ -1,18 +1,29 @@
-def split(metadata,training,validation,test):  
+import numpy as np
 
-    if training + validation + test != 1:
-        print("please make sure that the sum of the training, validation and test segment equals 1") 
+def split(metadata, training=0.7, validation=0.15, test=0.15, seed=12):
+    proportions = [training, validation, test]
 
-        pass
+    if any(p < 0 or p > 1 for p in proportions):
+        raise ValueError("Each proportion must be between 0 and 1.")
 
-    else:
-        writer_list = np.random.default_rng(12).permutation(metadata["writer_id"].unique())
-        writer_train = writer_list[0:int(len(writer_list)*training)]
-        writer_valid = writer_list[int(len(writer_list)*training)-1:(int(len(writer_list)*training)+int(len(writer_list)*validation))]
-        writer_test = writer_list[((int(len(writer_list)*training)+int(len(writer_list)*validation)))-1::]
+    if not np.isclose(sum(proportions), 1):
+        raise ValueError("The proportions must sum to 1.")
 
-        df_train = metadata[metadata["writer_id"].isin(writer_train)]
-        df_valid = metadata[metadata["writer_id"].isin(writer_valid)]
-        df_test = metadata[metadata["writer_id"].isin(writer_test)]
+    if metadata["writer_id"].isna().any():
+        raise ValueError("Some writer identifiers are missing.")
+
+    writers = np.sort(metadata["writer_id"].unique())
+    writers = np.random.default_rng(seed).permutation(writers)
+
+    train_end = int(len(writers) * training)
+    valid_end = train_end + int(len(writers) * validation)
+
+    writer_train = writers[:train_end]
+    writer_valid = writers[train_end:valid_end]
+    writer_test = writers[valid_end:]
+
+    df_train = metadata[metadata["writer_id"].isin(writer_train)].copy()
+    df_valid = metadata[metadata["writer_id"].isin(writer_valid)].copy()
+    df_test = metadata[metadata["writer_id"].isin(writer_test)].copy()
 
     return df_train, df_valid, df_test
