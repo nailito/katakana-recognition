@@ -3,6 +3,7 @@ import tensorflow as tf
 def load_image(path, label):
     image_bytes = tf.io.read_file(path)
     decoded_image = tf.io.decode_png(image_bytes, channels=1)
+    decoded_image.set_shape((63, 64, 1)) 
     image = tf.image.convert_image_dtype(decoded_image, tf.float32)
     return image, label
 
