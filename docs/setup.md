@@ -27,7 +27,7 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-The current dependencies cover data exploration and notebook execution. TensorFlow is not installed at this stage. The virtual environment is excluded from Git.
+The dependencies cover exploration, TensorFlow/Keras training, and notebook execution. Jinja2 supports pandas styled tables. The virtual environment is excluded from Git.
 
 ## Notebook kernel
 
@@ -44,6 +44,8 @@ The path should point to `.venv/bin/python` on macOS/Linux or `.venv\Scripts\pyt
 
 Start with `notebooks/01_data_exploration.ipynb`, then continue with `notebooks/02_dataset_preparation.ipynb`.
 
+Continue with `03_input_pipeline.ipynb`. Use `04_model_comparison.ipynb` as the central workspace for training and comparing architectures, and `05_error_analysis.ipynb` for optional diagnostics. Each notebook initializes its own data and imports. See the [experiment guide](experiments.md). Archived notebooks preserve historical code and outputs; they are not the active workflow.
+
 ## Local data
 
 Follow the [data acquisition and extraction instructions](../data/README.md). The notebooks and loader expect an `ETL1/` directory at the repository root, containing the original binary files and the extracted `ETL1C_07_unpack/` through `ETL1C_13_unpack/` directories.
@@ -58,7 +60,7 @@ It should report 67,726 records and 1,411 unique writers.
 
 ## Japanese characters in plots
 
-To display Katakana labels in plots, install a Japanese font such as Noto Sans JP. Both notebooks use `find_japanese_font` from `src/fonts.py` to detect installed fonts and check that they contain the characters in the current metadata. Each notebook initializes its own font configuration. If none is compatible, images are displayed without character titles; sample counts remain visible where provided.
+To display Katakana labels in plots, install a Japanese font such as Noto Sans JP. Character-image grids use `find_japanese_font` from `src/fonts.py` to detect installed fonts and check glyph coverage. Each notebook initializes its own font configuration. If none is compatible, images are displayed without character titles; sample counts remain visible where provided.
 
 For Japanese titles, download [Noto Sans JP](https://fonts.google.com/noto/specimen/Noto+Sans+JP) and extract the font files:
 

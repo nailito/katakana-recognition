@@ -1,0 +1,20 @@
+"""Reference CNN with 128 hidden Dense units."""
+
+from tensorflow import keras
+
+NAME = "Dense 128 (baseline)"
+ARTIFACT = "katakana_baseline"
+CONFIG = {"filters": [32, 64], "kernel_size": 3, "dense_units": 128}
+
+
+def build_model(input_shape=(63, 64, 1), num_classes=48):
+    layers = keras.layers
+    return keras.Sequential([
+        layers.Input(shape=input_shape),
+        layers.Conv2D(32, 3, activation="relu"),
+        layers.MaxPooling2D(),
+        layers.Conv2D(64, 3, activation="relu"),
+        layers.Flatten(),
+        layers.Dense(128, activation="relu"),
+        layers.Dense(num_classes, activation="softmax"),
+    ], name="baseline")
