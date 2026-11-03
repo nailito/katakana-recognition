@@ -23,3 +23,7 @@ Loaded the seven Katakana metadata CSVs, associated each record with its PNG pat
 Each writer contributes multiple character images with a shared handwriting style. Splitting images independently could place samples from the same person in both training and evaluation sets. The resulting scores could be overly optimistic, because the model would already have encountered that person's writing style during training.
 
 Keeping all images from a given `writer_id` in one set allows validation and test results to measure recognition of handwriting from people not seen during training. Writer identifiers organize the split; they are not input features for character recognition. The validation and test sets must also contain different writers from each other.
+
+## Future investigations
+
+- **Hyperparameter variation.** Compare learning rates, batch sizes, convolutional filter counts, kernel sizes, dense-layer widths, and regularization strengths. Define the candidate ranges and comparison criteria before running experiments. Keep the writer split fixed, record each configuration and its validation results, and assess promising configurations across multiple random seeds. Reserve the test set for the final evaluation. This investigation has not yet been carried out.
