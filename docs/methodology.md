@@ -26,4 +26,6 @@ Keeping all images from a given `writer_id` in one set allows validation and tes
 
 ## Future investigations
 
+- **Context-assisted recognition.** Explore combining character prediction probabilities with a Japanese word lexicon or language model to resolve ambiguous Katakana within a word. For example, if four characters of a five-character word are recognized confidently, compare candidate readings for the remaining character using both visual evidence and lexical plausibility. Keep multiple character candidates rather than committing immediately to the highest-scoring prediction, and allow words absent from the lexicon, such as names and loanwords. This investigation has not yet been carried out.
+
 - **Hyperparameter variation.** Compare learning rates, batch sizes, convolutional filter counts, kernel sizes, dense-layer widths, and regularization strengths. Define the candidate ranges and comparison criteria before running experiments. Keep the writer split fixed, record each configuration and its validation results, and assess promising configurations across multiple random seeds. Reserve the test set for the final evaluation. This investigation has not yet been carried out.
