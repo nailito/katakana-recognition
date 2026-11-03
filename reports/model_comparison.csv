@@ -1,3 +1,6 @@
 Run,Parameters,Validation accuracy,Validation loss,Validation errors,Class mapping,Split provenance
 Dense 128 (historical baseline),6677040,0.9351303577423096,0.2439456582069397,657,Historical assumption,Historical assumption
 Dense 64 (historical),3347952,0.9308846592903137,0.25165092945098877,700,Saved,Historical assumption
+Baseline (common protocol),6677040,0.9334518313407898,0.24575169384479523,674,Saved,Recorded
+Dropout 0.2 (common protocol),6677040,0.9458925724029541,0.2126132696866989,548,Saved,Recorded
+Dropout 0.4 (common protocol),6677040,0.9495458006858826,0.1877581775188446,511,Saved,Recorded

@@ -15,10 +15,13 @@ The current selection contains **67,726 grayscale images**, **48 characters**, a
 - Shared integer labels for the 48 characters.
 - TensorFlow input pipeline: grayscale decoding, normalization, batching, and prefetching. Only training data is shuffled.
 - Two trained CNN architectures: the 128-unit Dense baseline and a 64-unit variant.
+- Completed dropout comparison at rates 0, 0.2, and 0.4 under a shared training protocol.
 - A central notebook for controlled model experiments and global validation comparisons.
 - A separate notebook for exploratory character confusions and visual error analysis.
 
 Initial saved models reach **93.51%** validation accuracy for Dense 128 and **93.09%** for Dense 64 on the same 10,128 validation images. These are single-seed validation results, not final test scores. The test set remains unused.
+
+In the controlled dropout study, validation accuracy is **93.35%** without dropout, **94.59%** with rate 0.2, and **94.95%** with rate 0.4. Dropout 0.4 is the current best candidate on this run; confirmation across training seeds is still pending. See the [study analysis and next steps](reports/dropout_study.md).
 
 ## Documentation
 

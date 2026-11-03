@@ -74,7 +74,7 @@ def train_model(model_key, frames, characters, run_name, settings=None,
         monitor="val_loss", patience=config["patience"], restore_best_weights=True,
     )
     history = model.fit(train_ds, validation_data=val_ds, epochs=config["max_epochs"],
-                        callbacks=[early_stop], shuffle=False)
+                        callbacks=[early_stop], shuffle=False, verbose=2)
     output_dir.mkdir(parents=True, exist_ok=True)
     model.save(paths[".keras"])
     metadata = {

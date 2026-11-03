@@ -1,0 +1,4 @@
+Run,Parameters,Validation accuracy,Validation loss,Validation errors,Class mapping,Split provenance
+Dense 128 (baseline),6677040,0.9334518313407898,0.24575169384479523,674,Saved,Recorded
+Dense 128 + dropout 0.2,6677040,0.9458925724029541,0.2126132696866989,548,Saved,Recorded
+Dense 128 + dropout 0.4,6677040,0.9495458006858826,0.1877581775188446,511,Saved,Recorded
