@@ -16,13 +16,13 @@ The current selection contains **67,726 grayscale images**, **48 characters**, a
 - TensorFlow input pipeline: grayscale decoding, normalization, batching, and prefetching. Only training data is shuffled.
 - Two trained CNN architectures: the 128-unit Dense baseline and a 64-unit variant.
 - Completed dropout comparison at rates 0, 0.2, and 0.4 under a shared training protocol.
-- Completed the fixed-split, three-training-seed confirmation; prepared finer dropout tuning at 0.3/0.4/0.5, reusing the 0.4 models. Training remains user-run and is disabled by default.
+- Completed fixed-split confirmation and finer dropout tuning. Retained 0.4 as the working configuration and ended dropout tuning. Training remains user-run and is disabled by default in templates.
 - A central notebook for controlled model experiments and global validation comparisons.
 - A separate notebook for exploratory character confusions and visual error analysis.
 
 Initial saved models reach **93.51%** validation accuracy for Dense 128 and **93.09%** for Dense 64 on the same 10,128 validation images. These are single-seed validation results, not final test scores. The test set remains unused.
 
-In the initial controlled dropout study, validation accuracy was **93.35%** without dropout, **94.59%** with rate 0.2, and **94.95%** with rate 0.4. Across three training seeds, the corresponding means are **93.67%**, **94.68%**, and **95.04%**. Rate 0.4 leads both accuracy and loss for every seed. It is the current best tested rate, with finer tuning still pending. See the [refinement protocol](reports/dropout_refinement.md).
+Across three training seeds, mean validation accuracy increased from **93.67%** without dropout to **95.04%** at 0.4. Refinement at 0.3/0.4/0.5 yielded **95.10%/95.04%/95.15%**. Rate 0.5 has the highest mean accuracy, while 0.4 has the lowest mean loss (**0.1808**). We retain **0.4** as a practical working configuration and end rate tuning given the small marginal differences and compute cost. These remain validation results on one writer split. See the [dropout conclusion](reports/dropout_refinement.md).
 
 ## Documentation
 

@@ -21,7 +21,7 @@ Loaded the seven Katakana metadata CSVs, associated each record with its PNG pat
 7. **Separated comparisons from diagnostics.** Architecture definitions live in `src/models/`, with shared preparation, training, and evaluation in `src/experiments.py`. Notebook 04 compares global validation metrics and notebook 05 examines errors. Specific confusions, including チ/テ, are exploratory evidence rather than model-selection criteria. Historical notebooks remain archived. New training runs save their configuration, labels, history, and validation fingerprint.
 8. **Compared dropout strengths.** Completed rates 0, 0.2, and 0.4 on the Dense-128 architecture with the common protocol and seed 12. Validation accuracy improved from 93.35% to 94.59% and 94.95%, respectively; validation loss decreased from 0.2458 to 0.2126 and 0.1878. Dropout 0.4 is the current candidate, with multi-seed confirmation still pending. See the [dropout study](../reports/dropout_study.md) for the analysis and ordered next steps.
 9. **Completed fixed-split repetitions.** Separated split and training seeds and compared three rates over training seeds 12, 23, and 34. Mean validation accuracy was 93.67% without dropout, 94.68% at 0.2, and 95.04% at 0.4. Rate 0.4 led accuracy and loss for each seed. The test set remains unused.
-10. **Prepared a finer dropout comparison.** Added 0.3 and 0.5 model scripts and a notebook section comparing 0.3/0.4/0.5 with the same seeds. The three 0.4 artifacts are reused, requiring six new runs. This finer comparison has not yet been trained.
+10. **Completed refinement and concluded dropout tuning.** Compared 0.3/0.4/0.5 across the same three seeds, reusing the 0.4 runs. Mean accuracy is 95.10%/95.04%/95.15%; mean loss is 0.1907/0.1808/0.1842. Retained 0.4 as the practical working configuration with lowest mean loss, while acknowledging 0.5 has slightly higher mean accuracy. Ended rate tuning given the small marginal gains and compute cost. See the [conclusion](../reports/dropout_refinement.md).
 
 ### Why split by writer?
 
@@ -31,7 +31,7 @@ Keeping all images from a given `writer_id` in one set allows validation and tes
 
 ## Future investigations
 
-- **Refine dropout strength.** The completed fixed-split repetitions consistently favored 0.4 among the initial rates. Compare 0.3/0.4/0.5 across the same three training seeds with split seed 12, reporting mean accuracy/loss and variability. The prepared refinement reuses all three 0.4 runs and requires six new trainings; it has not yet been run.
+- **Prioritize useful, affordable experiments.** Dropout tuning is complete. Set a compute budget before any further experiment, start with one exploratory run per motivated modification, and repeat only promising changes. Future candidates should offer a concrete accuracy or computational-cost benefit. No next experiment has been launched.
 
 - **Context-assisted recognition.** Explore combining character prediction probabilities with a Japanese word lexicon or language model to resolve ambiguous Katakana within a word. For example, if four characters of a five-character word are recognized confidently, compare candidate readings for the remaining character using both visual evidence and lexical plausibility. Keep multiple character candidates rather than committing immediately to the highest-scoring prediction, and allow words absent from the lexicon, such as names and loanwords. This investigation has not yet been carried out.
 

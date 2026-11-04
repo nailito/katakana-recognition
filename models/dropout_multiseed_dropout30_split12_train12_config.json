@@ -1,0 +1,28 @@
+{
+  "model_key": "dropout30",
+  "architecture": {
+    "filters": [
+      32,
+      64
+    ],
+    "kernel_size": 3,
+    "dense_units": 128,
+    "dropout": 0.3
+  },
+  "training": {
+    "split_seed": 12,
+    "training_seed": 12,
+    "batch_size": 32,
+    "learning_rate": 0.001,
+    "max_epochs": 10,
+    "patience": 3
+  },
+  "tensorflow_version": "2.21.0",
+  "validation_fingerprint": "2a14e042543cd60c58f41ba59e2297f7f66f39e8f2a33f4cc76ac0f259314897",
+  "split_fractions": [
+    0.7,
+    0.15,
+    0.15
+  ],
+  "best_epoch": 7
+}

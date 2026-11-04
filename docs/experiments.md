@@ -79,7 +79,7 @@ Equivalent user-run command:
 python -m src.run_experiments --models dropout30 dropout40 dropout50 --prefix dropout_multiseed --report-prefix dropout_refinement --split-seed 12 --training-seeds 12 23 34
 ```
 
-Append `--evaluate-only` to evaluate saved runs without training. The finer study is prepared but has not yet been trained. See [the refinement protocol](../reports/dropout_refinement.md). Compare complete three-seed groups using global accuracy and loss; retain the test set for final evaluation.
+Append `--evaluate-only` to evaluate saved runs without training. The finer study is complete: 0.5 has the highest mean accuracy (95.15%), while 0.4 has the lowest mean loss (0.1808). Retain 0.4 as a practical working configuration and end dropout tuning given the small differences and user-reported 50-minute cost. See [the conclusion](../reports/dropout_refinement.md). Future experiments start with one exploratory run and an agreed compute budget; repeated seeds are reserved for worthwhile gains. Retain the test set for final evaluation.
 
 ### Run artifacts
 
