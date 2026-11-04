@@ -1,0 +1,10 @@
+Run,Model key,Model,Split seed,Training seed,Parameters,Validation accuracy,Validation loss,Validation errors,Class mapping,Split provenance
+dropout_multiseed_baseline_split12_train12,baseline,Dense 128 (baseline),12,12,6677040,0.9334518313407898,0.24575169384479523,674,Saved,Recorded
+dropout_multiseed_dropout20_split12_train12,dropout20,Dense 128 + dropout 0.2,12,12,6677040,0.9458925724029541,0.2126132696866989,548,Saved,Recorded
+dropout_multiseed_dropout40_split12_train12,dropout40,Dense 128 + dropout 0.4,12,12,6677040,0.9495458006858826,0.1877581775188446,511,Saved,Recorded
+dropout_multiseed_baseline_split12_train23,baseline,Dense 128 (baseline),12,23,6677040,0.9413506984710693,0.21829524636268616,594,Saved,Recorded
+dropout_multiseed_dropout20_split12_train23,dropout20,Dense 128 + dropout 0.2,12,23,6677040,0.9464849829673767,0.19443856179714203,542,Saved,Recorded
+dropout_multiseed_dropout40_split12_train23,dropout40,Dense 128 + dropout 0.4,12,23,6677040,0.9498420357704163,0.18234148621559143,508,Saved,Recorded
+dropout_multiseed_baseline_split12_train34,baseline,Dense 128 (baseline),12,34,6677040,0.9353278279304504,0.22746175527572632,655,Saved,Recorded
+dropout_multiseed_dropout20_split12_train34,dropout20,Dense 128 + dropout 0.2,12,34,6677040,0.9479660391807556,0.1899529993534088,527,Saved,Recorded
+dropout_multiseed_dropout40_split12_train34,dropout40,Dense 128 + dropout 0.4,12,34,6677040,0.9517180323600769,0.172157421708107,489,Saved,Recorded

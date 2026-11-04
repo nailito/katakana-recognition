@@ -20,6 +20,7 @@ Loaded the seven Katakana metadata CSVs, associated each record with its PNG pat
 6. **Trained and compared two architectures.** Evaluated saved Dense-128 and Dense-64 CNNs on the same validation split. Dense-128 reached 93.51% accuracy and loss 0.2439; Dense-64 reached 93.09% and loss 0.2517, with about half as many parameters. These initial single-seed results retain Dense-128 as the accuracy reference. See the [comparison report](../reports/dense_width_comparison.md).
 7. **Separated comparisons from diagnostics.** Architecture definitions live in `src/models/`, with shared preparation, training, and evaluation in `src/experiments.py`. Notebook 04 compares global validation metrics and notebook 05 examines errors. Specific confusions, including チ/テ, are exploratory evidence rather than model-selection criteria. Historical notebooks remain archived. New training runs save their configuration, labels, history, and validation fingerprint.
 8. **Compared dropout strengths.** Completed rates 0, 0.2, and 0.4 on the Dense-128 architecture with the common protocol and seed 12. Validation accuracy improved from 93.35% to 94.59% and 94.95%, respectively; validation loss decreased from 0.2458 to 0.2126 and 0.1878. Dropout 0.4 is the current candidate, with multi-seed confirmation still pending. See the [dropout study](../reports/dropout_study.md) for the analysis and ordered next steps.
+9. **Prepared fixed-split repetitions.** Separated split and training seeds, made dropout randomness configurable, and added a nine-run plan to notebook 04. Evaluation and aggregation report available runs, means, sample standard deviations, and incomplete groups. The confirmation training has not yet been run.
 
 ### Why split by writer?
 
@@ -29,7 +30,7 @@ Keeping all images from a given `writer_id` in one set allows validation and tes
 
 ## Future investigations
 
-- **Confirm regularization gains.** Separate the writer-split seed from training randomness, then repeat rates 0, 0.2, and 0.4 across predefined training seeds while keeping writers and labels fixed. Compare mean validation accuracy and loss and their variability. The current runner couples split and training seeds, so this separation must precede the experiment. These repeated trials have not yet been run.
+- **Confirm regularization gains.** The runner now separates writer-split seed from training randomness. The prepared plan repeats rates 0, 0.2, and 0.4 across training seeds 12, 23, and 34 with split seed 12, keeping writers and labels fixed. Compare mean validation accuracy and loss and their variability. These repeated trials have not yet been run.
 
 - **Context-assisted recognition.** Explore combining character prediction probabilities with a Japanese word lexicon or language model to resolve ambiguous Katakana within a word. For example, if four characters of a five-character word are recognized confidently, compare candidate readings for the remaining character using both visual evidence and lexical plausibility. Keep multiple character candidates rather than committing immediately to the highest-scoring prediction, and allow words absent from the lexicon, such as names and loanwords. This investigation has not yet been carried out.
 

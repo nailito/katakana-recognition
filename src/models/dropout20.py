@@ -7,7 +7,7 @@ ARTIFACT = "katakana_dropout20"
 CONFIG = {"filters": [32, 64], "kernel_size": 3, "dense_units": 128, "dropout": 0.2}
 
 
-def build_model(input_shape=(63, 64, 1), num_classes=48):
+def build_model(input_shape=(63, 64, 1), num_classes=48, seed=12):
     layers = keras.layers
     return keras.Sequential([
         layers.Input(shape=input_shape),
@@ -16,6 +16,6 @@ def build_model(input_shape=(63, 64, 1), num_classes=48):
         layers.Conv2D(64, 3, activation="relu"),
         layers.Flatten(),
         layers.Dense(128, activation="relu"),
-        layers.Dropout(0.2, seed=12),
+        layers.Dropout(0.2, seed=seed),
         layers.Dense(num_classes, activation="softmax"),
     ], name="dropout20")

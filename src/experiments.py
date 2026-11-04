@@ -13,7 +13,8 @@ from .models import MODELS
 from .split_dataset import split
 
 DEFAULT_TRAINING = {
-    "seed": 12,
+    "split_seed": 12,
+    "training_seed": 12,
     "batch_size": 32,
     "learning_rate": 0.001,
     "max_epochs": 10,
@@ -21,10 +22,28 @@ DEFAULT_TRAINING = {
 }
 
 
-def prepare_data(seed=12):
+def normalize_training(settings=None):
+    """Read new settings and legacy configs whose seed controlled both stages."""
+    supplied = dict(settings or {})
+    if "seed" in supplied:
+        if "split_seed" in supplied or "training_seed" in supplied:
+            raise ValueError("Use either legacy seed or separate seeds, not both.")
+        legacy_seed = supplied.pop("seed")
+        supplied.update(split_seed=legacy_seed, training_seed=legacy_seed)
+    unknown = supplied.keys() - DEFAULT_TRAINING.keys()
+    if unknown:
+        raise ValueError(f"Unknown training settings: {sorted(unknown)}")
+    return {**DEFAULT_TRAINING, **supplied}
+
+
+def prepare_data(split_seed=12, *, seed=None):
     """Return independently usable splits and a shared ordered character list."""
+    if seed is not None:  # Compatibility with earlier notebooks.
+        if split_seed != 12:
+            raise ValueError("Use split_seed rather than supplying both seed names.")
+        split_seed = seed
     metadata = load_metadata()
-    frames = dict(zip(("train", "validation", "test"), split(metadata, seed=seed)))
+    frames = dict(zip(("train", "validation", "test"), split(metadata, seed=split_seed)))
     characters = sorted(metadata["char"].unique())
     mapping = {char: index for index, char in enumerate(characters)}
     for frame in frames.values():
@@ -44,7 +63,7 @@ def validation_fingerprint(frame):
 def train_model(model_key, frames, characters, run_name, settings=None,
                 output_dir=PROJECT_ROOT / "models"):
     """Train a fresh model and save a separate run without overwriting artifacts."""
-    config = {**DEFAULT_TRAINING, **(settings or {})}
+    config = normalize_training(settings)
     if not run_name or Path(run_name).name != run_name or run_name in {".", ".."}:
         raise ValueError("Use a nonempty filename stem for run_name.")
     output_dir = Path(output_dir)
@@ -53,22 +72,22 @@ def train_model(model_key, frames, characters, run_name, settings=None,
     )}
     if any(path.exists() for path in paths.values()):
         raise FileExistsError("This run already exists. Choose a new run_name.")
-    expected, expected_characters = prepare_data(config["seed"])
+    expected, expected_characters = prepare_data(config["split_seed"])
     if list(characters) != expected_characters or any(
         not frames[name].equals(expected[name]) for name in expected
     ):
         raise ValueError("Prepared data does not match the configured split seed.")
 
     tf.keras.backend.clear_session()
-    tf.keras.utils.set_random_seed(config["seed"])
+    tf.keras.utils.set_random_seed(config["training_seed"])
     definition = MODELS[model_key]
-    model = definition.build_model(num_classes=len(characters))
+    model = definition.build_model(num_classes=len(characters), seed=config["training_seed"])
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=config["learning_rate"]),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(), metrics=["accuracy"],
     )
     train_ds = build_dataset(frames["train"], batch_size=config["batch_size"],
-                             training=True, seed=config["seed"])
+                             training=True, seed=config["training_seed"])
     val_ds = build_dataset(frames["validation"], batch_size=config["batch_size"])
     early_stop = tf.keras.callbacks.EarlyStopping(
         monitor="val_loss", patience=config["patience"], restore_best_weights=True,

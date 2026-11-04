@@ -16,6 +16,7 @@ The current selection contains **67,726 grayscale images**, **48 characters**, a
 - TensorFlow input pipeline: grayscale decoding, normalization, batching, and prefetching. Only training data is shuffled.
 - Two trained CNN architectures: the 128-unit Dense baseline and a 64-unit variant.
 - Completed dropout comparison at rates 0, 0.2, and 0.4 under a shared training protocol.
+- Prepared a nine-run confirmation with independent training seeds and a fixed writer split; training remains user-run and is disabled by default.
 - A central notebook for controlled model experiments and global validation comparisons.
 - A separate notebook for exploratory character confusions and visual error analysis.
 

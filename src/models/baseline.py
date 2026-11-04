@@ -7,7 +7,7 @@ ARTIFACT = "katakana_baseline"
 CONFIG = {"filters": [32, 64], "kernel_size": 3, "dense_units": 128}
 
 
-def build_model(input_shape=(63, 64, 1), num_classes=48):
+def build_model(input_shape=(63, 64, 1), num_classes=48, seed=12):
     layers = keras.layers
     return keras.Sequential([
         layers.Input(shape=input_shape),

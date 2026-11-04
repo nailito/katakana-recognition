@@ -30,8 +30,8 @@ These are exploratory results from one initialization/shuffling seed and one wri
 
 ## Next steps
 
-1. Separate the fixed writer-split seed from training randomness in the shared runner. The current `seed` controls both, so changing it directly would also change validation writers. Make the dropout random seed configurable as part of training randomness as well.
-2. Predefine several training seeds and repeat the full 0/0.2/0.4 comparison with the same writer split, label mapping, training budget, and stopping rule. Report individual runs and the mean and variability of validation accuracy and loss. Do not select only the best seed.
+1. Preparation complete: the shared runner now separates the fixed writer-split seed from training randomness, including configurable dropout randomness. Existing single-seed artifacts remain unchanged.
+2. Run the prepared nine-experiment confirmation: rates 0/0.2/0.4 crossed with training seeds 12, 23, and 34, using writer-split seed 12 and the same label mapping, training budget, and stopping rule. Notebook 04 includes a training flag (false by default), evaluation-only cells, and mean/sample-standard-deviation summaries. These nine runs have not yet been trained. Report individual runs and variability; do not select only the best seed or rank incomplete groups.
 3. If the improvement is consistent, retain the selected configuration and compare one further intervention at a time, such as L2 regularization or label-preserving image augmentation. Define candidate ranges before training and keep global metrics primary; use character errors to generate or interpret hypotheses.
 4. Freeze model selection before evaluating the untouched test set. Report final test results separately from validation results.
 
