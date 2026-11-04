@@ -17,7 +17,9 @@ Earlier notebooks 04 and 05 are preserved in `notebooks/archive/` with their his
 | `baseline` | `src/models/baseline.py` | Two convolutions, one pooling layer, Dense 128 |
 | `dense64` | `src/models/dense64.py` | Same architecture, Dense 64 |
 | `dropout20` | `src/models/dropout20.py` | Dense 128, then dropout with rate 0.2 |
+| `dropout30` | `src/models/dropout30.py` | Dense 128, then dropout with rate 0.3 |
 | `dropout40` | `src/models/dropout40.py` | Dense 128, then dropout with rate 0.4 |
+| `dropout50` | `src/models/dropout50.py` | Dense 128, then dropout with rate 0.5 |
 
 Each script exposes `NAME`, `ARTIFACT`, `CONFIG`, and `build_model(input_shape, num_classes, seed)`. The builder's seed controls dropout randomness where present; the runner sets the global training seed before building the network. These scripts define the network only. Shared data preparation and training are implemented once in `src/experiments.py`.
 
@@ -37,7 +39,7 @@ python -m src.run_experiments --models baseline dropout20 dropout40 --prefix dro
 
 The series runner reuses completed runs only when their recorded settings and architecture match, and validates their labels and validation fingerprint during evaluation. It exports an incremental `reports/dropout_study_comparison.csv`. Use a different prefix for a fresh series; existing artifacts are never overwritten. The central notebook also exposes the three saved runs. See [the study report](../reports/dropout_study.md) for measured results and limitations.
 
-All three initial runs are complete. Dropout 0.4 leads this single-seed comparison at 94.95% validation accuracy and loss 0.1878. Split and training seeds are now separate in the runner. The nine-run confirmation below is prepared but has not been trained. Future training remains user-run.
+All three initial runs and the nine-run confirmation below are complete. Dropout 0.4 leads the initial single-seed comparison at 94.95% validation accuracy and loss 0.1878, and the three-seed study at 95.04% mean accuracy and 0.1808 mean loss. Future training remains user-run.
 
 ## Fixed-split confirmation across training seeds
 
@@ -62,6 +64,24 @@ New filenames include both seeds: `<prefix>_<model>_split12_train23.keras`, with
 Do not rank configurations using incomplete groups or choose only the best seed. Confirm that accuracy/loss gains are consistent before finer dropout tuning or other interventions. The test set remains untouched. The legacy `run_series(..., seed=...)` and CLI `--seed` retain their original coupled behavior for historical single-seed runs; use the explicit confirmation API for fixed-split repetitions.
 
 ## New training runs
+
+### Prepared dropout refinement
+
+The completed three-seed study favored 0.4 over 0.2 and no dropout for each training seed. The next prepared comparison retains rates **0.3, 0.4, 0.5** and seeds **12, 23, 34**, with writer-split seed **12**. The three saved 0.4 runs are reused; only six new runs are required. The original epoch budget and stopping rule remain fixed.
+
+In notebook 04, run common preparation, then the section **Refine dropout: 0.3, 0.4, and 0.5**. Enable only `RUN_DROPOUT_REFINEMENT`; all other training flags should remain false. Its evaluation cell never trains models and marks incomplete groups explicitly.
+
+Artifact prefix `dropout_multiseed` keeps existing 0.4 paths unchanged. A separate `report_prefix="dropout_refinement"` exports `dropout_refinement_runs.csv` and `dropout_refinement_summary.csv`, preserving the original study's CSVs. No model is copied or overwritten. The code checks settings and provenance before accepting saved runs.
+
+Equivalent user-run command:
+
+```bash
+python -m src.run_experiments --models dropout30 dropout40 dropout50 --prefix dropout_multiseed --report-prefix dropout_refinement --split-seed 12 --training-seeds 12 23 34
+```
+
+Append `--evaluate-only` to evaluate saved runs without training. The finer study is prepared but has not yet been trained. See [the refinement protocol](../reports/dropout_refinement.md). Compare complete three-seed groups using global accuracy and loss; retain the test set for final evaluation.
+
+### Run artifacts
 
 The notebook uses an explicit `MODEL_KEY`, unique `RUN_NAME`, and `RUN_TRAINING` flag. Common defaults are split seed 12, training seed 12, batch size 32, Adam learning rate 0.001, at most 10 epochs, and EarlyStopping on validation loss with patience 3 and restored best weights.
 

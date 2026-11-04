@@ -31,8 +31,8 @@ These are exploratory results from one initialization/shuffling seed and one wri
 ## Next steps
 
 1. Preparation complete: the shared runner now separates the fixed writer-split seed from training randomness, including configurable dropout randomness. Existing single-seed artifacts remain unchanged.
-2. Run the prepared nine-experiment confirmation: rates 0/0.2/0.4 crossed with training seeds 12, 23, and 34, using writer-split seed 12 and the same label mapping, training budget, and stopping rule. Notebook 04 includes a training flag (false by default), evaluation-only cells, and mean/sample-standard-deviation summaries. These nine runs have not yet been trained. Report individual runs and variability; do not select only the best seed or rank incomplete groups.
-3. If the improvement is consistent, retain the selected configuration and compare one further intervention at a time, such as L2 regularization or label-preserving image augmentation. Define candidate ranges before training and keep global metrics primary; use character errors to generate or interpret hypotheses.
+2. Confirmation complete: all nine experiments for rates 0/0.2/0.4 and training seeds 12/23/34 use split seed 12. Mean accuracy is 93.67%, 94.68%, and 95.04%; sample standard deviation is 0.41, 0.11, and 0.12 percentage points. Mean validation loss is 0.2305, 0.1990, and 0.1808. Rate 0.4 leads both measures for every seed. These results support a consistent improvement across the tested initializations on this fixed writer split.
+3. The next prepared comparison refines rates to 0.3/0.4/0.5 using the same seeds. It reuses the three 0.4 runs and requires six new trainings. See `dropout_refinement.md`; this finer study has not yet been trained. L2 and label-preserving augmentation remain separate future interventions. Keep global metrics primary; use character errors to generate or interpret hypotheses.
 4. Freeze model selection before evaluating the untouched test set. Report final test results separately from validation results.
 
 No additional training is launched by this analysis update. The user runs future training experiments locally before results are reviewed.

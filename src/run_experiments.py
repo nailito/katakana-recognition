@@ -18,10 +18,14 @@ STUDY_COLUMNS = [
 ]
 
 
+def _validate_prefix(prefix):
+    if not prefix or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-" for c in prefix):
+        raise ValueError("Use letters, numbers, underscores or hyphens for prefix.")
+
+
 def run_series(model_keys, prefix="dropout_study", seed=12):
     """Train missing runs and evaluate the series on validation only."""
-    if not prefix or any(char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-" for char in prefix):
-        raise ValueError("Use letters, numbers, underscores or hyphens for prefix.")
+    _validate_prefix(prefix)
     settings = normalize_training({"seed": seed})
     frames, characters = prepare_data(seed=seed)
     artifacts = {}
@@ -57,8 +61,7 @@ def seed_study_plan(model_keys=("baseline", "dropout20", "dropout40"),
         raise ValueError("Choose at least one model and training seed.")
     if len(set(model_keys)) != len(model_keys) or len(set(training_seeds)) != len(training_seeds):
         raise ValueError("Model keys and training seeds must be unique.")
-    if not prefix or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-" for c in prefix):
-        raise ValueError("Use letters, numbers, underscores or hyphens for prefix.")
+    _validate_prefix(prefix)
     rows = []
     for training_seed in training_seeds:
         for key in model_keys:
@@ -121,9 +124,11 @@ def _save_study_tables(results, plan, prefix):
 
 def evaluate_seed_study(model_keys=("baseline", "dropout20", "dropout40"),
                         training_seeds=(12, 23, 34), split_seed=12,
-                        prefix="dropout_multiseed"):
+                        prefix="dropout_multiseed", report_prefix=None):
     """Evaluate available saved runs only; never start training."""
     plan = seed_study_plan(model_keys, training_seeds, split_seed, prefix)
+    report_prefix = prefix if report_prefix is None else report_prefix
+    _validate_prefix(report_prefix)
     frames, characters = prepare_data(split_seed=split_seed)
     rows = []
     for _, row in plan.iterrows():
@@ -135,15 +140,17 @@ def evaluate_seed_study(model_keys=("baseline", "dropout20", "dropout40"),
         _check_study_run(row, settings)
         rows.append(_study_row(row, frames["validation"], characters, settings["batch_size"]))
     results = pd.DataFrame(rows, columns=STUDY_COLUMNS)
-    summary = _save_study_tables(results, plan, prefix)
+    summary = _save_study_tables(results, plan, report_prefix)
     return results, summary
 
 
 def run_seed_study(model_keys=("baseline", "dropout20", "dropout40"),
                    training_seeds=(12, 23, 34), split_seed=12,
-                   prefix="dropout_multiseed"):
+                   prefix="dropout_multiseed", report_prefix=None):
     """Train missing study runs, keeping writer membership fixed for every run."""
     plan = seed_study_plan(model_keys, training_seeds, split_seed, prefix)
+    report_prefix = prefix if report_prefix is None else report_prefix
+    _validate_prefix(report_prefix)
     frames, characters = prepare_data(split_seed=split_seed)
     rows = []
     for _, row in plan.iterrows():
@@ -157,7 +164,7 @@ def run_seed_study(model_keys=("baseline", "dropout20", "dropout40"),
             train_model(row["Model key"], frames, characters, row["Run"], settings=settings)
         rows.append(_study_row(row, frames["validation"], characters, settings["batch_size"]))
         results = pd.DataFrame(rows, columns=STUDY_COLUMNS)
-        summary = _save_study_tables(results, plan, prefix)
+        summary = _save_study_tables(results, plan, report_prefix)
         print(summary.to_string(), flush=True)
     return results, summary
 
@@ -167,6 +174,7 @@ if __name__ == "__main__":
     parser.add_argument("--models", nargs="+", choices=MODELS,
                         default=["baseline", "dropout20", "dropout40"])
     parser.add_argument("--prefix")
+    parser.add_argument("--report-prefix", help="Separate output-table prefix, keeping artifact names unchanged.")
     parser.add_argument("--seed", type=int,
                         help="Legacy single-series seed controlling split and training.")
     parser.add_argument("--training-seeds", type=int, nargs="+",
@@ -181,11 +189,13 @@ if __name__ == "__main__":
         runner = evaluate_seed_study if args.evaluate_only else run_seed_study
         runner(args.models, training_seeds=args.training_seeds,
                split_seed=12 if args.split_seed is None else args.split_seed,
-               prefix=args.prefix or "dropout_multiseed")
+               prefix=args.prefix or "dropout_multiseed", report_prefix=args.report_prefix)
     else:
         if args.evaluate_only:
             parser.error("--evaluate-only requires --training-seeds")
         if args.split_seed is not None:
             parser.error("--split-seed requires --training-seeds")
+        if args.report_prefix is not None:
+            parser.error("--report-prefix requires --training-seeds")
         run_series(args.models, prefix=args.prefix or "dropout_study",
                    seed=12 if args.seed is None else args.seed)
