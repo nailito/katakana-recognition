@@ -1,0 +1,16 @@
+{
+  "run": "dropout_multiseed_dropout40_split12_train12",
+  "accuracy": 0.942873911767583,
+  "loss": 0.23352959752082825,
+  "errors": 584,
+  "total": 10223,
+  "wilson_95_interval": [
+    0.9382063731111534,
+    0.9472087290451177
+  ],
+  "validation_accuracy": 0.9495458006858826,
+  "validation_loss": 0.1877581775188446,
+  "test_fingerprint": "03bce354e2c7b063f1ff4b2a8f0a4e51bf0193491c6d669bdafad5e629a8c003",
+  "validation_fingerprint": "2a14e042543cd60c58f41ba59e2297f7f66f39e8f2a33f4cc76ac0f259314897",
+  "generated_at": "2026-11-06T17:53:13+01:00"
+}
