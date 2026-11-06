@@ -6,7 +6,7 @@ Frozen configuration: **dropout_multiseed_dropout40_split12_train12** (`model_ke
 
 | Field | Value |
 |---|---|
-| Artifact | `dropout_multiseed_dropout40_split12_train12.keras` (80.2 MB, weights kept local) |
+| Artifact | `dropout_multiseed_dropout40_split12_train12.keras` (26.7 MB, weights kept local) |
 | Architecture | [32, 64] filters, kernel 3, Dense 128, dropout 0.4 |
 | Training | split seed 12, training seed 12, batch 32, Adam 0.001, 10 max epochs, patience 3 |
 | Selected epoch | 5 of 8 |
