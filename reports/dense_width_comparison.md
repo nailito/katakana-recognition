@@ -1,6 +1,6 @@
 # Dense-width experiment: initial validation comparison
 
-Only the hidden Dense layer changes from 128 to 64 units. Both saved models are evaluated on the same 10,128 validation images using the writer split with seed 12. Evaluate the restored models with Keras `evaluate` and sparse categorical cross-entropy. The test set is unused.
+Only the hidden Dense layer changes from 128 to 64 units. Both saved models are evaluated on the same 10,128 validation images using the writer split with seed 12. Evaluate the restored models with Keras `evaluate` and sparse categorical cross-entropy. The test set was not used for this comparison.
 
 | Model | Parameters | Validation accuracy | Validation loss | Errors |
 |---|---:|---:|---:|---:|

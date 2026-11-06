@@ -29,7 +29,7 @@ To add a model, create an architecture script, register it in `src/models/__init
 
 The first regularization study compares rates 0, 0.2, and 0.4 after the hidden Dense-128 activation. Rate 0 is the unchanged baseline. All three models have 6,677,040 trainable parameters. With seed 12, their initial trainable weights were checked to be identical. This initial study used dropout seed 12; new runs pass the configurable training seed to dropout. Dropout is active during training and disabled for validation and inference.
 
-The retained rates compare no regularization with two increasing strengths; they do not exhaust possible rates. Learning rate, batch size, architecture, writer split, epoch budget, and stopping rule are fixed. A new baseline is trained under the common runner, since the older baseline used a preliminary dataset iteration. Rank configurations using restored-model validation accuracy and loss, then inspect learning curves. Do not infer improvement from lower training accuracy or a smaller train/validation gap alone. The test set remains unused.
+The retained rates compare no regularization with two increasing strengths; they do not exhaust possible rates. Learning rate, batch size, architecture, writer split, epoch budget, and stopping rule are fixed. A new baseline is trained under the common runner, since the older baseline used a preliminary dataset iteration. Rank configurations using restored-model validation accuracy and loss, then inspect learning curves. Do not infer improvement from lower training accuracy or a smaller train/validation gap alone. The test split stayed out of this study.
 
 To execute or resume this series from the repository root:
 
@@ -61,7 +61,7 @@ python -m src.run_experiments --models baseline dropout20 dropout40 --prefix dro
 
 New filenames include both seeds: `<prefix>_<model>_split12_train23.keras`, with the usual sidecars. `reports/dropout_multiseed_runs.csv` contains individual results and `reports/dropout_multiseed_summary.csv` contains per-model means and sample standard deviations (`ddof=1`). Missing runs are listed explicitly; aggregate groups are marked incomplete until all three planned seeds exist. Standard deviation is unavailable for fewer than two runs and is not a confidence interval. The notebook plots individual scores and mean/std for available runs.
 
-Do not rank configurations using incomplete groups or choose only the best seed. Confirm that accuracy/loss gains are consistent before finer dropout tuning or other interventions. The test set remains untouched. The legacy `run_series(..., seed=...)` and CLI `--seed` retain their original coupled behavior for historical single-seed runs; use the explicit confirmation API for fixed-split repetitions.
+Do not rank configurations using incomplete groups or choose only the best seed. Confirm that accuracy/loss gains are consistent before finer dropout tuning or other interventions. The test split stayed out of this confirmation. The legacy `run_series(..., seed=...)` and CLI `--seed` retain their original coupled behavior for historical single-seed runs; use the explicit confirmation API for fixed-split repetitions.
 
 ## New training runs
 
@@ -79,7 +79,7 @@ Equivalent user-run command:
 python -m src.run_experiments --models dropout30 dropout40 dropout50 --prefix dropout_multiseed --report-prefix dropout_refinement --split-seed 12 --training-seeds 12 23 34
 ```
 
-Append `--evaluate-only` to evaluate saved runs without training. The finer study is complete: 0.5 has the highest mean accuracy (95.15%), while 0.4 has the lowest mean loss (0.1808). Retain 0.4 as a practical working configuration and end dropout tuning given the small differences and user-reported 50-minute cost. See [the conclusion](../reports/dropout_refinement.md). Future experiments start with one exploratory run and an agreed compute budget; repeated seeds are reserved for worthwhile gains. Retain the test set for final evaluation.
+Append `--evaluate-only` to evaluate saved runs without training. The finer study is complete: 0.5 has the highest mean accuracy (95.15%), while 0.4 has the lowest mean loss (0.1808). Retain 0.4 as a practical working configuration and end dropout tuning given the small differences and user-reported 50-minute cost. See [the conclusion](../reports/dropout_refinement.md). Future experiments start with one exploratory run and an agreed compute budget; repeated seeds are reserved for worthwhile gains. The test split was kept for the final frozen evaluation described below.
 
 ### Run artifacts
 
@@ -96,10 +96,22 @@ Model weights (`models/*.keras`) are excluded from version control to keep the r
 
 Set `split_seed` before preparing data and vary `training_seed` independently. The runner checks that the supplied data matches the split seed. It creates a fresh shuffled dataset immediately before fitting. The historical notebooks consumed a shuffled batch during a pretraining check; the shared runner does not. Consequently identical seeds do not guarantee identical historical batch orders. Historical configurations containing only `seed` are interpreted as using it for both stages. Their original files are unchanged.
 
+## Final test evaluation
+
+After dropout tuning ended, model selection was frozen at `dropout40` (split seed 12, training seed 12). Exactly one evaluation was then run on the test split, which had never been used:
+
+```bash
+python -m src.final_test
+```
+
+The script verifies the saved class order and validation fingerprint, loads the artifact, predicts every test image once, and writes `reports/final_test_evaluation.md` plus per-class and confusion CSV/JSON tables. A second run is refused unless `--force` is passed, because the test split is single-use. Since model weights are not versioned, the `dropout_multiseed_dropout40_split12_train12.keras` artifact must exist locally or be retrained from its recorded configuration.
+
+Results: **94.29%** accuracy and **0.2335** loss, with 584 errors on 10,223 images (95% Wilson interval 93.82–94.72%). The same checkpoint scored 94.95% and 0.1878 on the 10,128 validation images used for early stopping, a 0.66 percentage-point gap. The test result is reported separately and did not drive any further tuning. See the [final test report](../reports/final_test_evaluation.md).
+
 ## Validation comparison
 
 The `artifacts` dictionary selects saved runs to compare. The notebook loads their saved weights, evaluates the same validation images with `model.evaluate`, and exports `reports/model_comparison.csv`. It displays accuracy, cross-entropy loss, total errors, parameter count, and provenance availability. Do not select a model using its last training epoch or a different epoch chosen separately for accuracy.
 
 Saved class order and validation fingerprints are checked when present. Historical artifacts lack some sidecars; this is reported as a historical assumption, not silently treated as verified provenance. Their association with the seed-12 split and sorted character labels comes from the archived notebooks. The original model files remain unchanged.
 
-The comparison does not train missing models, use the test set, or infer absent historical training curves. The current 128-unit baseline has no saved history sidecar, so its missing curve is reported explicitly. Preserve the test set for final evaluation after model selection.
+The comparison does not train missing models, use the test set, or infer absent historical training curves. The current 128-unit baseline has no saved history sidecar, so its missing curve is reported explicitly. The test split was reserved for the single frozen evaluation described above and cannot be reused for model selection.

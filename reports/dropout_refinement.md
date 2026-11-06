@@ -19,7 +19,7 @@ The user completed the six new trainings. The existing three 0.4 runs were reuse
 
 Use the saved restored model from each run. Report every run and each rate's mean and sample standard deviation of validation accuracy and loss. Do not rank incomplete groups. Treat standard deviation as initialization/shuffle variability, not a confidence interval or evidence across different writer splits.
 
-If rankings differ between accuracy and loss or between seeds, document that trade-off. Small differences may not support a firm choice with only three seeds. Finer tuning on the same validation set remains model selection; reserve the untouched test set for the final frozen configuration. Character-level confusions remain exploratory diagnostics.
+If rankings differ between accuracy and loss or between seeds, document that trade-off. Small differences may not support a firm choice with only three seeds. Finer tuning on the same validation set remains model selection; the untouched test set was reserved for the final frozen configuration. Character-level confusions remain exploratory diagnostics.
 
 ## Results
 
@@ -35,6 +35,6 @@ The source tables are `dropout_refinement_runs.csv` and `dropout_refinement_summ
 
 Dropout provides a useful improvement for this architecture: the initial three-seed comparison increased mean accuracy from 93.67% without dropout to 95.04% at 0.4, while reducing mean loss from 0.2305 to 0.1808. The refinement adds only a small accuracy trade-off and no configuration dominates both criteria.
 
-Retain **dropout 0.4** as the working configuration because it preserves the demonstrated improvement and has the best mean validation loss among the tested rates. This is a practical choice, not evidence that 0.4 maximizes accuracy or is universally optimal. End dropout tuning here; the limited marginal gain did not justify further compute for this learning project. No final test evaluation has been performed.
+Retain **dropout 0.4** as the working configuration because it preserves the demonstrated improvement and has the best mean validation loss among the tested rates. This is a practical choice, not evidence that 0.4 maximizes accuracy or is universally optimal. End dropout tuning here; the limited marginal gain did not justify further compute for this learning project. Model selection was then frozen and the test split was evaluated once: **94.29%** accuracy and **0.2335** loss, with 584 errors on 10,223 images. See the [final test report](final_test_evaluation.md).
 
 For future work, agree on a compute budget before training. Start with one exploratory run per motivated change and repeat only when the gain appears useful enough to justify confirmation. Prefer changes with a clear benefit in recognition or computational cost over finer rate searches. The user launches training; no further experiment is started by this conclusion.

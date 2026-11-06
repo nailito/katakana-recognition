@@ -6,7 +6,7 @@ Can dropout improve validation recognition relative to the unregularized Dense-1
 
 All variants retain the original two convolutions, one pooling layer, Dense 128, and 48 softmax outputs: 6,677,040 trainable parameters. Initial trainable weights are identical with seed 12. The dropout layers use a fixed internal seed of 12. All models use the same writer split, batch size 32, Adam learning rate 0.001, at most 10 epochs, and EarlyStopping on validation loss with patience 3 and restored best weights. A fresh baseline is trained with the common runner; historical models are not the controlled baseline for this study.
 
-The training set contains 47,375 images and validation 10,128. No final-test predictions are computed. The study uses one training seed and one writer split, so results are exploratory. Any promising rate should be checked across additional training seeds while keeping the evaluation protocol explicit.
+The training set contains 47,375 images and validation 10,128. No final-test predictions were computed at this stage. The study uses one training seed and one writer split, so results are exploratory. Any promising rate should be checked across additional training seeds while keeping the evaluation protocol explicit.
 
 ## Results
 
@@ -33,6 +33,6 @@ These are exploratory results from one initialization/shuffling seed and one wri
 1. Preparation complete: the shared runner now separates the fixed writer-split seed from training randomness, including configurable dropout randomness. Existing single-seed artifacts remain unchanged.
 2. Confirmation complete: all nine experiments for rates 0/0.2/0.4 and training seeds 12/23/34 use split seed 12. Mean accuracy is 93.67%, 94.68%, and 95.04%; sample standard deviation is 0.41, 0.11, and 0.12 percentage points. Mean validation loss is 0.2305, 0.1990, and 0.1808. Rate 0.4 leads both measures for every seed. These results support a consistent improvement across the tested initializations on this fixed writer split.
 3. Refinement complete: rates 0.3/0.4/0.5 give mean accuracy 95.10%/95.04%/95.15% and mean loss 0.1907/0.1808/0.1842. Retain 0.4 as a practical working configuration with the lowest mean loss, while acknowledging 0.5 has slightly higher mean accuracy. End dropout tuning given the small marginal differences and user-reported 50-minute refinement cost. See `dropout_refinement.md` for the full conclusion. Future changes start with one exploratory run under an agreed compute budget; repeat only promising changes.
-4. Freeze model selection before evaluating the untouched test set. Report final test results separately from validation results.
+4. Complete: model selection was frozen at dropout 0.4, then the untouched test split was evaluated once. Test accuracy is 94.29% at loss 0.2335 (584 errors / 10,223 images). See the [final test report](final_test_evaluation.md).
 
 No additional training is launched by this analysis update. The user runs future training experiments locally before results are reviewed.
