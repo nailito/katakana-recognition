@@ -224,3 +224,7 @@ __marimo__/
 
 # Raw or extracted ETL1 data (also excludes a local symbolic link).
 /ETL1
+
+# Saved model weights stay local. The JSON sidecars remain versioned so runs
+# can be audited and compared without redistributing large binary files.
+/models/*.keras

@@ -62,7 +62,11 @@ def validation_fingerprint(frame):
 
 def train_model(model_key, frames, characters, run_name, settings=None,
                 output_dir=PROJECT_ROOT / "models"):
-    """Train a fresh model and save a separate run without overwriting artifacts."""
+    """Train a fresh model and save an inference artifact without overwriting.
+
+    The saved ``.keras`` file contains the architecture and the best weights
+    only; optimizer state is intentionally omitted.
+    """
     config = normalize_training(settings)
     if not run_name or Path(run_name).name != run_name or run_name in {".", ".."}:
         raise ValueError("Use a nonempty filename stem for run_name.")
@@ -95,7 +99,12 @@ def train_model(model_key, frames, characters, run_name, settings=None,
     history = model.fit(train_ds, validation_data=val_ds, epochs=config["max_epochs"],
                         callbacks=[early_stop], shuffle=False, verbose=2)
     output_dir.mkdir(parents=True, exist_ok=True)
-    model.save(paths[".keras"])
+    # Save architecture and weights only. Keeping the Adam moments would
+    # triple the artifact size (~80 MB instead of ~27 MB) and runs are never
+    # resumed, so the optimizer state is not needed.
+    saved_model = definition.build_model(num_classes=len(characters))
+    saved_model.set_weights(model.get_weights())
+    saved_model.save(paths[".keras"])
     metadata = {
         "model_key": model_key, "architecture": definition.CONFIG,
         "training": config, "tensorflow_version": tf.__version__,

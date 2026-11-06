@@ -87,10 +87,12 @@ The notebook uses an explicit `MODEL_KEY`, unique `RUN_NAME`, and `RUN_TRAINING`
 
 Each run saves four files under `models/`:
 
-- `<run_name>.keras`: model and weights selected by EarlyStopping.
+- `<run_name>.keras`: architecture and weights selected by EarlyStopping. Optimizer state is omitted, so the artifact is used for evaluation only and cannot resume training.
 - `<run_name>_history.json`: all recorded training and validation metrics.
 - `<run_name>_classes.json`: ordered character labels.
 - `<run_name>_config.json`: architecture, training settings, split fractions, TensorFlow version, selected epoch, and ordered validation fingerprint.
+
+Model weights (`models/*.keras`) are excluded from version control to keep the repository small; the JSON sidecars remain tracked so every run stays auditable. Weights stay on the machine that trained them and can be regenerated from the recorded configuration. The historical `dropout_study_*_seed12` and `dropout_multiseed_*_split12_train12` files are the same seed-12 runs saved under two names; both names are kept because the reports reference them.
 
 Set `split_seed` before preparing data and vary `training_seed` independently. The runner checks that the supplied data matches the split seed. It creates a fresh shuffled dataset immediately before fitting. The historical notebooks consumed a shuffled batch during a pretraining check; the shared runner does not. Consequently identical seeds do not guarantee identical historical batch orders. Historical configurations containing only `seed` are interpreted as using it for both stages. Their original files are unchanged.
 
