@@ -1,6 +1,15 @@
+"""Assign whole writers to training, validation, and test sets."""
+
 import numpy as np
 
+
 def split(metadata, training=0.7, validation=0.15, test=0.15, seed=12):
+    """Return disjoint train/validation/test frames split by writer.
+
+    Writers are shuffled once with ``seed``, then assigned to the three sets;
+    every image of a writer stays in the same set. Input row ordering and
+    columns are preserved.
+    """
     proportions = [training, validation, test]
 
     if any(p < 0 or p > 1 for p in proportions):

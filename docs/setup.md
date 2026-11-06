@@ -71,3 +71,13 @@ For Japanese titles, download [Noto Sans JP](https://fonts.google.com/noto/speci
 Restart the notebook kernel after installation. Alternatively, set `JP_FONT_PATH` in the grid cell to a local `.ttf`, `.otf`, or `.ttc` file. This also supports downloaded fonts that have not been installed system-wide.
 
 Existing compatible fonts such as Hiragino can be detected automatically. The notebook does not download or install fonts. Font selection only changes plot titles, not the image data.
+
+## Tests
+
+Run the unit tests from the repository root:
+
+```bash
+python -m unittest discover -s tests -t . -v
+```
+
+The tests cover the writer split, training settings, and validation fingerprints. They use small synthetic frames and do not require the ETL1 data.

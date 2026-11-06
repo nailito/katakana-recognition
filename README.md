@@ -42,4 +42,5 @@ models/      Saved model artifacts and run metadata
 reports/     Figures and analysis outputs
 src/         Reusable Python functions
 src/models/  One architecture definition per Python script
+tests/       Unit tests for the writer split and run metadata
 ```
